@@ -93,7 +93,10 @@ export default class ActionCanvas {
     }
 
     hitTest(x, y){
-        for(let object of this.parent.objects){
+        const objects = this.parent.objects;
+
+        for(let i=objects.length-1; i>=0; i--){
+            const object = objects[i];
             if(x > object.x && y > object.y && x < object.x + object.width && y < object.y + object.height){
                 return object;
             }
