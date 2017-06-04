@@ -1,6 +1,8 @@
 import ActionCanvas from './action-canvas'
 import ImageObject from './image-object'
 
+let objectId = 0;
+
 export default class Artboard {
     constructor(element, callback){
         this.canvas = element;
@@ -95,6 +97,8 @@ export default class Artboard {
 
     add(object){
         const currentState = this.history[this.historyState] || [];
+        objectId++;
+        object.id = objectId;
         this.historyState++;
         if(this.historyState>0){
             this.history = this.history.slice(0, this.historyState);
@@ -116,6 +120,7 @@ export default class Artboard {
                     this.context.drawImage(object.image, object.x, object.y, object.width, object.height);
                     break;
                 case 'rectangle':
+                    this.context.fillStyle = '#ddd';
                     this.context.fillRect(object.x, object.y, object.width, object.height);
                     break;
 

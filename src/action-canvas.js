@@ -2,6 +2,7 @@ export default class ActionCanvas {
     constructor(parent){
         this.parent = parent;
         this.canvas = document.createElement('canvas');
+        this.context = this.canvas.getContext('2d');
         this.canvas.className = 'action-canvas';
         this.canvas.style.position = 'absolute';
         this.canvas.style.left = 0;
@@ -23,7 +24,8 @@ export default class ActionCanvas {
             dragging: false,
             offsetX: 0,
             offsetY: 0,
-            object: null
+            object: null,
+            selectedId: null
         }
     }
 
@@ -58,9 +60,17 @@ export default class ActionCanvas {
                     click: true,
                     offsetX: object.x - x,
                     offsetY: object.y - y,
-                    object: object
+                    object: object,
+                    selectedId: object.id
                 });
             }
+            else {
+                this.setEvents({
+                    selectedId: null
+                })
+            }
+
+            this.render();
         }
 
         document.onmouseup = (event) => {
@@ -73,6 +83,8 @@ export default class ActionCanvas {
             });
 
             this.parent.applyFutureState();
+
+            this.render();
         }
 
         document.onmousemove = (event) => {
@@ -85,6 +97,7 @@ export default class ActionCanvas {
                         x: x + this.events.offsetX,
                         y: y + this.events.offsetY
                     });
+                    this.render();
                 }
 
                 this.setEvents({
@@ -102,6 +115,37 @@ export default class ActionCanvas {
             if(x > object.x && y > object.y && x < object.x + object.width && y < object.y + object.height){
                 return object;
             }
+        }
+    }
+
+    drawSelection(object){
+        this.context.strokeRect(object.x, object.y, object.width, object.height);
+    }
+
+    drawAnchors(object){
+        const left = object.x;
+        const right = object.x + object.width;
+        const top = object.y;
+        const bottom = object.y + object.height;
+        const anchorWidth = 30;
+
+        this.context.fillStyle = '#fff';
+        this.context.fillRect(right-(anchorWidth/2), top-(anchorWidth/2), anchorWidth, anchorWidth);
+        this.context.strokeRect(right-(anchorWidth/2), top-(anchorWidth/2), anchorWidth, anchorWidth);
+    }
+
+    render(){
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        if(this.events.selectedId){
+            const objectId = this.events.selectedId;
+            for(const object of this.parent.objectList()){
+                if(object.id == objectId){
+                    this.drawSelection(object);
+                    this.drawAnchors(object);
+                    break;
+                }
+            }   
         }
     }
 }
