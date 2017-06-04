@@ -50,7 +50,7 @@ export default class ActionCanvas {
         document.onmousedown = (event) => {
             this.updateCanvas();
             const x = (event.pageX - this.offset.x) * this.pixelRatio;
-            const y = (event.pageY - this.offset.x) * this.pixelRatio;
+            const y = (event.pageY - this.offset.y) * this.pixelRatio;
             const object = this.hitTest(x, y);
 
             if(object){
@@ -71,11 +71,13 @@ export default class ActionCanvas {
                 offsetY: 0,
                 object: null
             });
+
+            this.parent.applyFutureState();
         }
 
         document.onmousemove = (event) => {
             const x = (event.pageX - this.offset.x) * this.pixelRatio;
-            const y = (event.pageY - this.offset.x) * this.pixelRatio;
+            const y = (event.pageY - this.offset.y) * this.pixelRatio;
 
             if(this.events.click){
                 if(this.events.object){
@@ -93,7 +95,7 @@ export default class ActionCanvas {
     }
 
     hitTest(x, y){
-        const objects = this.parent.objects;
+        const objects = this.parent.objectList();
 
         for(let i=objects.length-1; i>=0; i--){
             const object = objects[i];
